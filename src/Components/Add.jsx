@@ -54,10 +54,10 @@ function Add({refreshPosts}) {
   const handleShow = () => setShow(true);
 
   const handleAddPost = async () => {
-    const { title, description, status, postImage, userEmail } = postData;
+    const { title, description, status, postImage } = postData;
 
   
-    if (!title || !description || !status || !postImage || !userEmail) {
+    if (!title || !description || !status || !postImage ) {
       toast.info('Please fill in all fields');
       return;
     }
