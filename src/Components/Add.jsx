@@ -45,7 +45,7 @@ function Add({refreshPosts}) {
       title: '',
       description: '',
       status: 'Public',
-      userEmail: localStorage.getItem('email') || '',
+      userEmail: localStorage.getItem('userEmail') || '',
       postImage: null,
     });
     setPreview('');
@@ -54,10 +54,10 @@ function Add({refreshPosts}) {
   const handleShow = () => setShow(true);
 
   const handleAddPost = async () => {
-    const { title, description, status, postImage } = postData;
+    const { title, description, status, postImage, userEmail } = postData;
 
   
-    if (!title || !description || !status || !postImage ) {
+    if (!title || !description || !status || !postImage || !userEmail) {
       toast.info('Please fill in all fields');
       return;
     }

@@ -85,6 +85,7 @@ function Auth({ register }) {
       const result = await loginAPI({ email, password });
       if (result.status === 200) {
         sessionStorage.setItem('username', result.data.existingUser.username);
+        sessionStorage.setItem('userEmail', result.data.existingUser.email);
         sessionStorage.setItem('token', result.data.token);
         setIsAuthorized(true);
         navigate('/');
