@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, FloatingLabel, Form, Modal } from 'react-bootstrap';
-import { updatePostAPI, deletePostAPI } from '../Services/allAPI'; 
+import { updatePostAPI } from '../Services/allAPI'; 
 import { server_url } from '../Services/server_url';
 import { ToastContainer, toast } from 'react-toastify';
 
-function EditPost({ posts,refreshPosts }) {
+function EditPost({ posts, refreshPosts }) {
   const [show, setShow] = useState(false);
   const [preview, setPreview] = useState('');
   const [postData, setPostData] = useState({
@@ -12,7 +12,7 @@ function EditPost({ posts,refreshPosts }) {
     title: posts?.title,
     description: posts?.description,
     status: posts?.status,
-    postImage: ''
+    postImage: null
   });
 
   useEffect(() => {
@@ -26,12 +26,13 @@ function EditPost({ posts,refreshPosts }) {
   const handleClose = () => {
     setShow(false);
     setPostData({
+      id: posts?._id,
       title: posts?.title,
       description: posts?.description,
       status: posts?.status,
-      postImage: ''
+      postImage: null
     });
-    setPreview(`${server_url}/uploads/${posts?.postImage}`); 
+    setPreview(`${server_url}/uploads/${posts?.postImage}`);
   };
 
   const handleShow = () => setShow(true);
@@ -45,47 +46,47 @@ function EditPost({ posts,refreshPosts }) {
     }
 
     const { id, title, description, status, postImage } = postData;
-    if (!title || !description || !status || !postImage) {
+    if (!title || !description || !status) {
       toast.info('Please fill all the fields');
-    } else {
-      const reqBody = new FormData();
-      reqBody.append('title', title);
-      reqBody.append('description', description);
-      reqBody.append('status', status);
-      reqBody.append('userEmail', userEmail); 
-      postImage && reqBody.append('postImage', postImage);
+      return;
+    }
 
-      const token = sessionStorage.getItem('token');
-      if (token) {
-        const reqHeader = {
-          'Content-Type': 'multipart/form-data',
-          authorization: `Bearer ${token}`
-        };
-        try {
-          const result = await updatePostAPI(id, reqBody, reqHeader);
-          if (result.status === 200) {
-            toast.success('Post updated successfully');
-            handleClose();
-            refreshPosts();
-          } else {
-            toast.warning(result.data.response);
-          }
-        } catch (err) {
-          console.log(err);
+    const reqBody = new FormData();
+    reqBody.append('title', title);
+    reqBody.append('description', description);
+    reqBody.append('status', status);
+    reqBody.append('userEmail', userEmail);
+    if (postImage) {
+      reqBody.append('postImage', postImage);
+    }
+
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const reqHeader = {
+        'Content-Type': 'multipart/form-data',
+        authorization: `Bearer ${token}`
+      };
+      try {
+        const result = await updatePostAPI(id, reqBody, reqHeader);
+        if (result.status === 200) {
+        
+          toast.success('Post updated successfully');
+          refreshPosts();
+          handleClose();
+        } else {
+          toast.warning(result.data.response);
         }
+      } catch (err) {
+        console.log(err);
       }
     }
   };
 
- 
-  
   return (
     <>
       <Button className="btn btn-light p-0 m-1" onClick={handleShow}>
         <i className="fa-solid fa-pen-to-square text-dark m-3 p-0"></i>
       </Button>
-
-    
 
       <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
         <Modal.Header closeButton>
@@ -103,7 +104,7 @@ function EditPost({ posts,refreshPosts }) {
                 <img
                   height={"200px"}
                   width={"100%"}
-                  src={preview ? preview : `${server_url}/Uploads/${posts?.postImage}`}
+                  src={preview}
                   alt="Post Preview"
                 />
               </label>

@@ -81,7 +81,7 @@ const [user,setUser]=useState([])
     try{
     const result =await deletePostAPI(id,reqHeader)
     if(result.status==200){
-      getMyPosts()
+      getMyPosts();
     }else{
       console.log(result.response.data);
       
