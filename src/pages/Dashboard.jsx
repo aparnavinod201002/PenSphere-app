@@ -24,7 +24,7 @@ function Dashboard() {
   const [postId, setPostId] = useState(null);
   const [mostCommentedPost, setMostCommentedPost] = useState(null);
 
-  // Fetch comments for a specific post
+ 
   const fetchComments = async (postId) => {
     setLoadingComments(true);
     try {
@@ -41,11 +41,11 @@ function Dashboard() {
 
   const handleShowComments = async (postId) => {
     setSelectedPostId(postId);
-    await fetchComments(postId); // Fetch comments before opening modal
+    await fetchComments(postId); 
     setShowModal(true);
   };
 
-  // Fetch user data
+  
   const getUser = async () => {
     const token = sessionStorage.getItem('token');
     if (token) {
@@ -64,7 +64,7 @@ function Dashboard() {
     }
   };
 
-  // Delete a post
+ 
   const deletePost = async (id) => {
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -83,7 +83,7 @@ function Dashboard() {
     }
   };
 
-  // Fetch all user posts
+ 
   const getMyPosts = async () => {
     const token = sessionStorage.getItem('token');
     if (token) {
@@ -102,7 +102,7 @@ function Dashboard() {
     }
   };
 
-  // Fetch the most commented post ID
+ 
   const fetchMostCommentedPostId = async () => {
     const token = sessionStorage.getItem('token');
     if (token) {
@@ -122,7 +122,7 @@ function Dashboard() {
     }
   };
 
-  // Fetch the most commented post details
+ 
   const fetchMostCommentedPost = async (id) => {
     if (!id) return;
     
@@ -154,7 +154,7 @@ function Dashboard() {
       <Container>
         <Header />
 
-        {/* User Info */}
+     
         <Row className="mb-4">
           {user.length > 0 ? (
             user.map((users) => (
@@ -170,7 +170,7 @@ function Dashboard() {
 
         <Add refreshPosts={getMyPosts} />
 
-        {/* Most Commented Post */}
+       
         {mostCommentedPost && (
           <Row className="mb-4">
             <Col md={12}>
@@ -196,7 +196,7 @@ function Dashboard() {
           </Row>
         )}
 
-        {/* All User Posts */}
+      
         <Row>
           {myPosts.length > 0 ? (
             myPosts.map((posts) => (
@@ -210,9 +210,15 @@ function Dashboard() {
                   />
                   <Card.Body>
                     <Card.Title>{posts.title}</Card.Title>
+                    <div className='d-flex'>
                     <Button variant="danger" onClick={() => handleShowComments(posts._id)}>
-                      <i className="fa-regular fa-comment"></i> View Comments
+                      <i className="fa-regular fa-comment"></i>
                     </Button>
+                    <EditPost posts={posts} refrehData={getMyPosts}/>
+                    <Button className="btn btn-light p-0 m-1" onClick={()=>deletePost(posts._id)}>
+                            <i className="fa-solid fa-trash text-dark m-3 p-0"></i>
+                          </Button>
+                          </div>
                   </Card.Body>
                 </Card>
               </Col>
@@ -222,7 +228,7 @@ function Dashboard() {
           )}
         </Row>
 
-        {/* Comments Modal */}
+        
         <Modal show={showModal} onHide={() => setShowModal(false)}>
           <Modal.Header closeButton>
             <Modal.Title>Comments</Modal.Title>
