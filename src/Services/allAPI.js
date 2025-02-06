@@ -51,3 +51,15 @@ export const deletePostAPI = async(id,reqHeader)=>{
 export const updatePostAPI = async(id,reqBody,reqHeader)=>{
     return await commonAPI('PUT',`${server_url}/posts/edit/${id}`,reqBody,reqHeader)
 }
+
+
+export const MostCommentedPostIdAPI = async(reqHeader)=>{
+    return await commonAPI('GET',`${server_url}/postId`,"",reqHeader)
+}
+
+
+
+
+export const MostCommentedPostAPI = async(id,reqHeader)=>{
+    return await commonAPI('GET',`${server_url}/MostcommentsPost/${id}`,"",reqHeader)
+}

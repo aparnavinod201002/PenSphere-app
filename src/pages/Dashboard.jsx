@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Modal } from 'react-bootstrap';
 import Add from '../Components/Add';
-import { getMyPostsAPI, getCommentsAPI, getUserAPI, deletePostAPI } from '../Services/allAPI';
+import { 
+  getMyPostsAPI, 
+  getCommentsAPI, 
+  getUserAPI, 
+  deletePostAPI, 
+  MostCommentedPostIdAPI, 
+  MostCommentedPostAPI 
+} from '../Services/allAPI';
 import { server_url } from '../Services/server_url';
 import EditPost from '../Components/EditPost';
 import Header from '../Components/Header';
@@ -13,197 +20,226 @@ function Dashboard() {
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
-const [user,setUser]=useState([])
- 
+  const [user, setUser] = useState([]);
+  const [postId, setPostId] = useState(null);
+  const [mostCommentedPost, setMostCommentedPost] = useState(null);
 
-
+  // Fetch comments for a specific post
   const fetchComments = async (postId) => {
     setLoadingComments(true);
     try {
       const result = await getCommentsAPI(postId);
       if (result.status === 200) {
         setComments(result.data);
-      } else {
-        console.log("Error fetching comments:", result);
       }
     } catch (error) {
-      console.log("Failed to fetch comments:", error);
+      console.error("Failed to fetch comments:", error);
     } finally {
       setLoadingComments(false);
     }
   };
 
- 
-  const handleShowComments = (postId) => {
+  const handleShowComments = async (postId) => {
     setSelectedPostId(postId);
+    await fetchComments(postId); // Fetch comments before opening modal
     setShowModal(true);
-    fetchComments(postId);
   };
 
-
-  const getUser = async()=>{
-    const token = sessionStorage.getItem('token')
-    if(token)
-    {
+  // Fetch user data
+  const getUser = async () => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
       const reqHeader = {
-        "Content-Type":"multipart/form-data",
-        "authorization":`Bearer ${token}`
-      }
-      try{
-        const result= await getUserAPI(reqHeader)
-        if(result.status==200){
-          setUser(result.data)
-         
-        }else{
-          console.log(result);
-          
+        "Content-Type": "multipart/form-data",
+        "authorization": `Bearer ${token}`
+      };
+      try {
+        const result = await getUserAPI(reqHeader);
+        if (result.status === 200) {
+          setUser(result.data);
         }
-
-        }catch(err){
-          console.log(err);
-          
-        }
+      } catch (err) {
+        console.error(err);
       }
     }
-   
+  };
 
-
-    const deletePost= async(id)=>{
-
-      const token = sessionStorage.getItem("token")
-      if(token){
-    const reqHeader={
-      
-    "content-Type":"application/json",
-    "authorization":`Bearer ${token}`
+  // Delete a post
+  const deletePost = async (id) => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "application/json",
+        "authorization": `Bearer ${token}`
+      };
+      try {
+        const result = await deletePostAPI(id, reqHeader);
+        if (result.status === 200) {
+          getMyPosts();
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
-   
-    try{
-    const result =await deletePostAPI(id,reqHeader)
-    if(result.status==200){
-      getMyPosts();
-    }else{
-      console.log(result.response.data);
-      
+  };
+
+  // Fetch all user posts
+  const getMyPosts = async () => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "multipart/form-data",
+        "authorization": `Bearer ${token}`
+      };
+      try {
+        const result = await getMyPostsAPI(reqHeader);
+        if (result.status === 200) {
+          setMyPosts(result.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     }
-    }catch(err){
-    console.log(err);
+  };
+
+  // Fetch the most commented post ID
+  const fetchMostCommentedPostId = async () => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "multipart/form-data",
+        "authorization": `Bearer ${token}`
+      };
+      try {
+        const result = await MostCommentedPostIdAPI(reqHeader);
+        if (result.status === 200) {
+          setPostId(result.data.postId);
+          fetchMostCommentedPost(result.data.postId);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  // Fetch the most commented post details
+  const fetchMostCommentedPost = async (id) => {
+    if (!id) return;
     
-    }
-      }
-    }
-
-
-    const getMyPosts = async () => {
-      const token = sessionStorage.getItem('token');
-      if (token) {
-        const reqHeader = {
-          "Content-Type": "multipart/form-data",
-          "authorization": `Bearer ${token}`
-        };
-        try {
-          const result = await getMyPostsAPI(reqHeader);
-          if (result.status === 200) {
-            setMyPosts(result.data);
-          } else {
-            console.log(result);
-          }
-        } catch (err) {
-          console.log(err);
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "multipart/form-data",
+        "authorization": `Bearer ${token}`
+      };
+      try {
+        const result = await MostCommentedPostAPI(id, reqHeader);
+        if (result.status === 200) {
+          setMostCommentedPost(result.data);
         }
+      } catch (err) {
+        console.error(err);
       }
-    };
-  
-    useEffect(() => {
-      getMyPosts();
-      getUser()
-    }, []);
-  
+    }
+  };
+
+  useEffect(() => {
+    getMyPosts();
+    getUser();
+    fetchMostCommentedPostId();
+  }, []);
+
   return (
-   <>
-    <Container className="">
-       <Header/>
-   
-      <Row className="mb-4">
-       { user?user.map((users)=>(
+    <>
+      <Container>
+        <Header />
 
-      <Col className="text-center">
-         
-          <h4>{users.username}</h4>
-          <p>{users.email}</p>
-        </Col> )):<p>Not user Found</p>}
-      </Row>
+        {/* User Info */}
+        <Row className="mb-4">
+          {user.length > 0 ? (
+            user.map((users) => (
+              <Col className="text-center" key={users._id}>
+                <h4>{users.username}</h4>
+                <p>{users.email}</p>
+              </Col>
+            ))
+          ) : (
+            <p>No user found</p>
+          )}
+        </Row>
 
-      <Add refreshPosts={getMyPosts}/>
-     
+        <Add refreshPosts={getMyPosts} />
 
-     
-      <Row>
-        {myPosts.length > 0 ? (
-          myPosts.map((posts) => (
-            <Col key={posts._id} md={4} sm={6} xs={12} className="mb-4">
-              <Card className='shadow'>
-                <Card.Img
-                  variant="top"
-                  height={"450px"}
-                  src={`${server_url}/uploads/${posts.postImage}`}
-                  alt={posts.title}
+        {/* Most Commented Post */}
+        {mostCommentedPost && (
+          <Row className="mb-4">
+            <Col md={12}>
+              <Card className="shadow border-danger">
+                <Card.Header className="bg-danger text-white text-center">
+                  Most Commented Post
+                </Card.Header>
+                <Card.Img 
+                  variant="top" 
+                  height="450px" 
+                  src={`${server_url}/uploads/${mostCommentedPost.postImage}`} 
+                  alt={mostCommentedPost.title} 
                 />
                 <Card.Body>
-                  <Card.Title>{posts.title}</Card.Title>
-                  <Card.Text>{posts.description}</Card.Text>
-                  <Card.Text className='text-danger text-justify'>{posts.status}</Card.Text>
-
-                
-
-<div className='d-flex'>
-                  <EditPost posts={posts} refreshPosts={getMyPosts}/>
-
-
-                 
-                  <Button className='btn-light' onClick={()=>deletePost(posts?._id)}><i className="fa-solid fa-trash-can text-danger"></i></Button>
-
-                 
-                  <Button variant="danger" className="m-3 " onClick={() => handleShowComments(posts._id)}>
-                    <i className="fa-regular fa-comment"></i> 
+                  <Card.Title>{mostCommentedPost.title}</Card.Title>
+                  <Card.Text>{mostCommentedPost.description}</Card.Text>
+                  <Button variant="danger" onClick={() => handleShowComments(mostCommentedPost._id)}>
+                    <i className="fa-regular fa-comment"></i> View Comments
                   </Button>
-                  </div>
                 </Card.Body>
               </Card>
             </Col>
-          ))
-        ) : (
-          <p>No posts added yet</p>
+          </Row>
         )}
-      </Row>
 
-    
-      <Modal show={showModal} onHide={() => setShowModal(false)} backdrop="static" keyboard={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>Post Comments</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {loadingComments ? (
-            <p>Loading comments...</p>
-          ) : comments.length > 0 ? (
-            comments.map((comment, index) => (
-              <div key={index} className="border-bottom py-2">
-                <strong>{c.name} :</strong> {comment.comment}
-              </div>
+        {/* All User Posts */}
+        <Row>
+          {myPosts.length > 0 ? (
+            myPosts.map((posts) => (
+              <Col key={posts._id} md={4} sm={6} xs={12} className="mb-4">
+                <Card className="shadow">
+                  <Card.Img 
+                    variant="top" 
+                    height="450px" 
+                    src={`${server_url}/uploads/${posts.postImage}`} 
+                    alt={posts.title} 
+                  />
+                  <Card.Body>
+                    <Card.Title>{posts.title}</Card.Title>
+                    <Button variant="danger" onClick={() => handleShowComments(posts._id)}>
+                      <i className="fa-regular fa-comment"></i> View Comments
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
             ))
           ) : (
-            <p>No comments yet.</p>
+            <p>No posts added yet</p>
           )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      
-    </Container>
-    <Footer/>
+        </Row>
+
+        {/* Comments Modal */}
+        <Modal show={showModal} onHide={() => setShowModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Comments</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {loadingComments ? (
+              <p>Loading comments...</p>
+            ) : comments.length > 0 ? (
+              comments.map(comment => <p key={comment._id}>{comment.name} : {comment.comment}</p>)
+            ) : (
+              <p>No comments available</p>
+            )}
+          </Modal.Body>
+        </Modal>
+
+        <Footer />
+      </Container>
     </>
   );
 }
