@@ -12,7 +12,7 @@ function Auth({ register }) {
   const { isAuthorized, setIsAuthorized } = useContext(TokenAuthContext);
 
 //new added is what
-
+//other comments
   const [userData, setUserData] = useState({
     username: '',
     email: '',
