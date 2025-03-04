@@ -10,7 +10,9 @@ function Auth({ register }) {
   const isRegisterForm = register ? true : false;
   const navigate = useNavigate();
   const { isAuthorized, setIsAuthorized } = useContext(TokenAuthContext);
-//new added to
+
+//new added is what
+
   const [userData, setUserData] = useState({
     username: '',
     email: '',
@@ -25,12 +27,15 @@ function Auth({ register }) {
 
   // Password validation function
   //new commend added
+
   //another added
+  //new 
+
   const isValidPassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     return passwordRegex.test(password);
   };
-
+//new comment is added added
   const handleRegister = async (e) => {
     e.preventDefault();
     const { username, email, password } = userData;
