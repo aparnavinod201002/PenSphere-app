@@ -25,6 +25,7 @@ function Auth({ register }) {
 
   // Password validation function
   //new commend added
+  //another added
   const isValidPassword = (password) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     return passwordRegex.test(password);
