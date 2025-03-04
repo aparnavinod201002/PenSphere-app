@@ -33,7 +33,7 @@ function Auth({ register }) {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     return passwordRegex.test(password);
   };
-
+//new comment
   const handleRegister = async (e) => {
     e.preventDefault();
     const { username, email, password } = userData;
