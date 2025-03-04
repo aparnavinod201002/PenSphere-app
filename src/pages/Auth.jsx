@@ -11,6 +11,7 @@ function Auth({ register }) {
   const navigate = useNavigate();
   const { isAuthorized, setIsAuthorized } = useContext(TokenAuthContext);
 //new added is what
+//other comments
   const [userData, setUserData] = useState({
     username: '',
     email: '',
