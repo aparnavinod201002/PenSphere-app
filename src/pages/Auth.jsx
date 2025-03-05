@@ -10,9 +10,7 @@ function Auth({ register }) {
   const isRegisterForm = register ? true : false;
   const navigate = useNavigate();
   const { isAuthorized, setIsAuthorized } = useContext(TokenAuthContext);
-
-//new added is what
-//other comments
+//other conflict created
   const [userData, setUserData] = useState({
     username: '',
     email: '',
