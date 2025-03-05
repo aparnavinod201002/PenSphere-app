@@ -19,6 +19,12 @@ function Auth({ register }) {
     password: ''
   });
 //other
+
+
+//new comment aded
+
+
+
   // Email validation function
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
