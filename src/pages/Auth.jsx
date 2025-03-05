@@ -21,8 +21,8 @@ function Auth({ register }) {
 //other
 
 
-//new comment aded
 
+//change in feature
 
 
   // Email validation function
