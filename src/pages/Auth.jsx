@@ -19,7 +19,7 @@ function Auth({ register }) {
     password: ''
   });
 //other
-
+//new
 
 
 //change in feature
