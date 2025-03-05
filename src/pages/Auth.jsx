@@ -18,14 +18,7 @@ function Auth({ register }) {
     email: '',
     password: ''
   });
-//other
-//new
-
-
-//change in feature
-
-
-  // Email validation function
+//new check
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
