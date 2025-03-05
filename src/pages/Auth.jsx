@@ -26,6 +26,8 @@ function Auth({ register }) {
     return emailRegex.test(email);
   };
 
+  const isTrue= "true"
+
   // Password validation function
   //new commend added
 
